@@ -71,7 +71,6 @@ import java.util.List;
 
 public class AppActivity extends AppCompatActivity implements IMainFrame {
 
-    private SliderNativeAd sliderNativeAd;
     String fileName = "";
     Boolean isBookmarked = false;
 
@@ -175,8 +174,6 @@ public class AppActivity extends AppCompatActivity implements IMainFrame {
         adLayout.setBackgroundColor(getResources().getColor(R.color.white));
         appFrame.addView(adLayout);
 
-        sliderNativeAd = new SliderNativeAd(this, adLayout);
-        sliderNativeAd.refreshAd(crossPromotionRemoteList);
 
         ExtensionFunKt.setRenameCompleteCallback((currentFile, newFile) ->  toolbar.setTitle(newFile.getName()));
         ExtensionFunKt.setDeleteCompleteCallback((currentFile) ->  finish());
@@ -270,13 +267,11 @@ public class AppActivity extends AppCompatActivity implements IMainFrame {
             wm.removeView(settingsButton);
         }
 
-        sliderNativeAd.getTimerHandlerAd().removeCallbacks(sliderNativeAd.getTimerRunnableAd());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        sliderNativeAd.getTimerHandlerAd().removeCallbacks(sliderNativeAd.getTimerRunnableAd());
     }
 
     protected void onResume() {
@@ -305,8 +300,6 @@ public class AppActivity extends AppCompatActivity implements IMainFrame {
             wmParams.gravity = Gravity.END | Gravity.CENTER;
             wm.addView(pageDown, wmParams);
         }
-        sliderNativeAd.setAutoScrollRecyclerView();
-
 
     }
 

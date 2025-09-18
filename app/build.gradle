@@ -4,10 +4,8 @@ plugins {
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-parcelize'
-    // 保留Google服务插件以避免编译错误
-    id 'com.google.gms.google-services'
-    // Firebase crashlytics插件已注释
-    // id 'com.google.firebase.crashlytics'
+
+
 }
 
 android {
@@ -176,11 +174,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    // Firebase依赖 - 保留以避免编译错误，但不会实际初始化
-    implementation 'com.google.firebase:firebase-analytics-ktx:19.0.1'
-    // implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
-    // implementation 'com.google.firebase:firebase-messaging-ktx:22.0.0'
-    implementation 'com.google.firebase:firebase-config-ktx:21.0.1'
+
 
     // pdf viewer
     implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1'
@@ -195,8 +189,7 @@ dependencies {
     // Google Play - 保留依赖以避免编译错误
 //    implementation 'com.android.billingclient:billing:3.0.3'//Billing Library.
     implementation 'com.google.android.play:core:1.10.0'//In app update
-    // 保留Google Ads依赖以避免编译错误，但不会实际使用
-    implementation 'com.google.android.gms:play-services-ads:20.2.0'//ad mob
+
 
     //Utils
     implementation "com.github.skydoves:powermenu:2.1.9" //dialogs

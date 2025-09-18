@@ -3,8 +3,6 @@ package itech.pdfreader.documentreader.alldocumentreader.filereader.officereader
 import android.os.Bundle
 import android.view.View
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.PdfEditorAppBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.ModuleType
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.*
@@ -56,28 +54,8 @@ class PdfEditorAppActivity : BaseActivity() {
 
     private fun refreshAdOnView() {
         /**show native ad*/
-        binding.shimmerViewContainer.visibility = View.VISIBLE
-        binding.shimmerViewContainer.startShimmer()
-        if (!utilsViewModel.isPremiumUser() && isInternetConnected()) {
-            binding.adLayout.visibility = View.VISIBLE
-            setNativeAd(
-                utilsViewModel.isPremiumUser(),
-                binding.adLayout,
-                R.layout.view_screen_native_layout,
-                TAG,
-                adMobNativeId = getString(R.string.pageEditorScreenNativeId), onFailed = {
-                    binding.shimmerViewContainer.visibility = View.GONE
-                    binding.adLayout.visibility = View.GONE
-                    binding.shimmerViewContainer.stopShimmer()
-                }
-            ) {
-                binding.shimmerViewContainer.visibility = View.GONE
-                binding.shimmerViewContainer.stopShimmer()
-            }
-        }else{
-            binding.shimmerViewContainer.visibility = View.GONE
-            binding.adLayout.visibility = View.GONE
-        }
+        binding.shimmerViewContainer.visibility = View.GONE
+        binding.adLayout.visibility = View.GONE
         /************************/
     }
 

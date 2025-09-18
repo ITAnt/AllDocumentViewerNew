@@ -1,9 +1,7 @@
 package itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities
 
 import androidx.annotation.Keep
-import com.google.firebase.analytics.FirebaseAnalytics
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.NativeAdsHelperClass
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.remote.FirebaseRemoteConfigDataClass
+import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.remote.LocalConfigDataClass
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.viewmodels.DataViewModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.viewmodels.UtilsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -16,10 +14,7 @@ object AppModule {
         //single { DocModelRepository(get()) }
         single { SharedPref(get()) }
         single { DocumentUtils(get()) }
-        single { NativeAdsHelperClass(get()) }
-        // Firebase服务已禁用
-        // single { FirebaseRemoteConfigDataClass().init() }
-        // single { FirebaseAnalytics.getInstance(get()) }
+        single { LocalConfigDataClass().init() }
 
 //        viewModel { BillingViewModel(application = get()) }
         viewModel { DataViewModel(get()) }

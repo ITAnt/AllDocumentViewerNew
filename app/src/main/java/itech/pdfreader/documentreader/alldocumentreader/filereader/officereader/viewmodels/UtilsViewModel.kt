@@ -22,7 +22,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.remote.DataRepository
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.remote.FirebaseRemoteConfigDataClass
+import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.remote.LocalConfigDataClass
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.remote.RemoteConfigModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.repositories.UtilsRepository
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.fragments.bottomsheats.AllowPermissionBottomSheet
@@ -32,7 +32,7 @@ import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.
 
 class UtilsViewModel(application: Application) : AndroidViewModel(application) {
     private var repository = UtilsRepository.getInstance(application, SharedPref(application))
-    private var dataRepositry = DataRepository.getInstance(application, FirebaseRemoteConfigDataClass().init(),SharedPref(application))
+    private var dataRepositry = DataRepository.getInstance(application, LocalConfigDataClass().init(), SharedPref(application))
 
     var onSaveFileHomeFragmentCallback: (() -> Unit)? = null
 

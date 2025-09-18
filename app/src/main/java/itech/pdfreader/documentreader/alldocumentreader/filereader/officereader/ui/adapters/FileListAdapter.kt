@@ -9,11 +9,10 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.firebase.crashlytics.internal.model.CrashlyticsReport.Session.User
+// Google Ads已移除
+// Firebase Crashlytics已移除
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.NativeAdViewHolder
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.NativeAdsCallBack
+// 广告相关类已移除
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.HeaderListItemBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.PdfGridListItemBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.PdfListItemBinding
@@ -360,10 +359,6 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.NativeAdsViewHolderClass
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.NativeAdCallback
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.model.BaseItemModel
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.model.ItemTypeEnum
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.PdfListItemBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions
@@ -376,45 +371,19 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class FileListAdapter(private var isGridEnable: Boolean? = true, var type: String = "") :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-    NativeAdCallback {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var currentEntities: MutableList<BaseItemModel> = ArrayList()
+    private var currentEntities: MutableList<DataItemModel> = ArrayList()
     private var itemList = mutableListOf<DataModel>()
     private var selectedItems: SparseBooleanArray
-    var adsHashMap = HashMap<Int, Any>()
-    override fun onNewAdLoaded(nativeAd: Any, position: Int) {
-        adsHashMap[position] = nativeAd
-    }
-
-    override fun onAdClicked(position: Int) {
-        adsHashMap.remove(position)
-        notifyDataSetChanged()
-    }
 
     override fun getItemViewType(position: Int): Int {
-        return if (currentEntities[position].itemType() == ItemTypeEnum.REAL_ITEM.ordinal) {
-            ItemTypeEnum.REAL_ITEM.ordinal
-        } else {
-            ItemTypeEnum.NATIVE_AD.ordinal
-        }
+        return 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ItemTypeEnum.REAL_ITEM.ordinal -> {
-                val binding: PdfListItemBinding = PdfListItemBinding.inflate(LayoutInflater.from(parent.context))
-                DataViewHolder(binding)
-            }
-            else -> {
-                val view2 = LayoutInflater.from(parent.context).inflate(R.layout.recycler_native_ad_item, parent, false)
-                val nativeId= if(type==Constants.SEARCH){
-                    R.string.searchScreenNativeId
-                }else
-                    R.string.documentListNativeId
-                return NativeAdsViewHolderClass(context = parent.context, view2,nativeId, this)
-            }
-        }
+        val binding: PdfListItemBinding = PdfListItemBinding.inflate(LayoutInflater.from(parent.context))
+        return DataViewHolder(binding)
     }
 
     fun setOnItemClickListener(listener: (DataModel) -> Unit) {
@@ -597,9 +566,6 @@ class FileListAdapter(private var isGridEnable: Boolean? = true, var type: Strin
             itemList = packsList
             Log.d("favroite_list", "Pack List Size ${packsList.size}")
             packsList.forEachIndexed { index, imageEntity ->
-                if (isNativeAdEnable && isNetworkAvilable && ((index != 0 && index % countAfter == 0) || index == Constants.FIRST_ADS_COUNT_AFTER)) {
-                    currentEntities.add(NativeItemModel(null, periority))
-                }
                 Log.d("favroite_list", "Pack List Size ${currentEntities.size} item Added ${imageEntity.name}")
                 currentEntities.add(DataItemModel(imageEntity))
             }
@@ -612,40 +578,16 @@ class FileListAdapter(private var isGridEnable: Boolean? = true, var type: Strin
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (val item = currentEntities[position]) {
-            is NativeItemModel -> {
-                if (adsHashMap[position] != null) {
-                    item.nativeAd = adsHashMap[position] as Any
-                }
-                item.bindItem(holder, position)
-            }
-            is DataItemModel -> {
-                item.bindItem(holder, position)
-            }
-        }
+        val item = currentEntities[position]
+        item.bindItem(holder, position)
     }
 
-    private class NativeItemModel(var nativeAd: Any?, var periority: Int) : BaseItemModel() {
-        override fun itemType(): Int {
-            return ItemTypeEnum.NATIVE_AD.ordinal
+    class DataItemModel(var imageEntity: DataModel) {
+        fun itemType(): Int {
+            return 1
         }
 
-        override fun bindItem(holder: RecyclerView.ViewHolder?, position: Int) {
-            (holder as NativeAdsViewHolderClass).setData(nativeAd, position, periority)
-        }
-
-        var pos: Int = 0
-        public fun setNewPos(mPos: Int) {
-            this.pos = mPos
-        }
-    }
-
-    class DataItemModel(var imageEntity: DataModel) : BaseItemModel() {
-        override fun itemType(): Int {
-            return ItemTypeEnum.REAL_ITEM.ordinal
-        }
-
-        override fun bindItem(holder: RecyclerView.ViewHolder?, position: Int) {
+        fun bindItem(holder: RecyclerView.ViewHolder?, position: Int) {
             holder as DataViewHolder
             holder.bindImageData(imageEntity, holder, position)
         }

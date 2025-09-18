@@ -13,9 +13,6 @@ import com.github.barteksc.pdfviewer.listener.*
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.github.barteksc.pdfviewer.util.FitPolicy
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.ActivityDocumentViewBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.AdModelClass
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
@@ -80,7 +77,6 @@ class ViewerActivity : BaseActivity(), OnLoadCompleteListener, OnErrorListener,
 
     private fun initView() {
         getIntentValues()
-        refreshAd()
         binding.apply {
             header.backBtn.setOnClickListener {
                 onBackPressed()
@@ -184,50 +180,6 @@ class ViewerActivity : BaseActivity(), OnLoadCompleteListener, OnErrorListener,
     private var timerRunnableAd: Runnable? = null
     private var timerHandlerAd: Handler? = null
     private var adsList = mutableListOf<AdModelClass>()
-    private fun refreshAd() {
-        /**show native ad*/
-        if (!utilsViewModel.isPremiumUser() && isInternetConnected()) {
-            adsList.add(AdModelClass("", "", "", "", "", Constants.NATIVE_AD))
-            utilsViewModel.remoteConfigModel?.let { it ->
-                if (!it.crossPromotionAppsData?.appsLinks.isNullOrEmpty()) {
-                    it.crossPromotionAppsData?.appsLinks?.forEach {
-                        adsList.add(
-                            AdModelClass(
-                                it.appShortDesc.toString(),
-                                it.appShortDesc.toString(),
-                                "INSTALL",
-                                it.appCoverLink.toString(),
-                                it.appIconLink.toString(),
-                                it.appLink.toString()
-                            )
-                        )
-                    }
-                } else {
-                    adsList.add(
-                        AdModelClass(
-                            "PDF Reader-PDF Editor, Creator",
-                            "iTech Solution AppsProductivity",
-                            "INSTALL",
-                            "https://play-lh.googleusercontent.com/2Ax7coEMZiUOqtyyzIgOXbZm9V9Js8dcfsaNZTs2dXRIm7alecD9m7iyf_ZzSgnjS8WE=s180-rw",
-                            "https://play-lh.googleusercontent.com/2Ax7coEMZiUOqtyyzIgOXbZm9V9Js8dcfsaNZTs2dXRIm7alecD9m7iyf_ZzSgnjS8WE=s180-rw",
-                            "https://play.google.com/store/apps/details?id=itech.pdfreader.documentreader.alldocumentreader.filereader.officereader"
-                        )
-                    )
-                }
-            }
-        }
-        val adapterScroller = ScrollerAdsAdapter(true)
-        adapterScroller.differ.submitList(adsList)
-        adapterScroller.setOnItemClickListener {
-            if (it.adType != Constants.NATIVE_AD)
-                openUrl(it.adType)
-        }
-        binding.adLayout.layoutManager =
-            StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL)
-        binding.adLayout.adapter = adapterScroller
-        binding.adLayout.adapter = adapterScroller
-        /************************/
-    }
 
     private fun showPasswordDialog(dataModel: DataModel) {
         val dialog = PasswordProtectedDialog(context = this, onResult = {
@@ -417,9 +369,7 @@ class ViewerActivity : BaseActivity(), OnLoadCompleteListener, OnErrorListener,
 
     private fun showInterAdThenStartNextProcess() {
         if (Companions.viewerScreenCounter == Companions.globalInterAdCounter) {
-            InterstitialAdsUtils.getInstance().showInterstitialAdNew(this) {
-                startNextScreen(type)
-            }
+            startNextScreen(type)
             Companions.viewerScreenCounter = 0
         } else {
             Companions.viewerScreenCounter++

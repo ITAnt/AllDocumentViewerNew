@@ -7,13 +7,6 @@ import android.os.Looper
 import android.view.View
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.ActivitySplashBinding
 import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
-import com.google.android.gms.ads.MobileAds
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
-//import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.billing.BillingViewModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.*
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions.Companion.isPurchased
 
@@ -74,11 +67,7 @@ class SplashScreenActivity : BaseActivity() {
         utilsViewModel.setPremiumUser(false)
         utilsViewModel.setAutoAdsRemoved(false)
         isPurchased = false
-        MobileAds.initialize(this)
-        InterstitialAdsUtils.getInstance().loadInterstitialAd(this@SplashScreenActivity, true)
         utilsViewModel.syncRemoteConfig()
-        refreshAD()
-
     }
 
     override fun onResume() {
@@ -86,43 +75,11 @@ class SplashScreenActivity : BaseActivity() {
         applySplashTimer()
     }
 
-    private fun refreshAD() {
-        binding.shimmerViewContainer.visibility = View.VISIBLE
-        binding.shimmerViewContainer.startShimmer()
-        setNativeAd(
-            utilsViewModel.isPremiumUser(),
-            binding.adFrame,
-            R.layout.splash_native_ad,
-            TAG,
-            adMobNativeId = getString(R.string.splashScreenNativeId), onFailed = {
-                binding.shimmerViewContainer.visibility = View.GONE
-                binding.adLayout.visibility = View.GONE
-                binding.shimmerViewContainer.stopShimmer()
-            }
-        ) {
-            binding.shimmerViewContainer.visibility = View.GONE
-            binding.shimmerViewContainer.stopShimmer()
-        }
-    }
+
 
 
     private fun applySplashTimer() {
-        if (isInternetConnected()) {
-            if (!utilsViewModel.isPremiumUser()) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    isSplashTimerComplete = true
-                    if (sharedPref.getBoolean(Constants.isGetStartedBtnClick)) {
-                            navigateToNextScreen()
-                    } else {
-                        binding.loadingTxt.visibility = View.GONE
-                        binding.getStartBtn.visibility = View.VISIBLE
-                    }
-                }, 6000)
-            } else
-                startWithTwoSecondsDelay()
-        } else {
-            startWithTwoSecondsDelay()
-        }
+        startWithTwoSecondsDelay()
     }
 
     private fun startWithTwoSecondsDelay() {
@@ -147,9 +104,7 @@ class SplashScreenActivity : BaseActivity() {
 
     private fun navigateToNextScreen() {
         if (isFileLoadingComplete && isSplashTimerComplete) {
-            InterstitialAdsUtils.getInstance().showInterstitialAdNew(this) {
-                checkPermissionAndNavigateToMainActivity()
-            }
+            checkPermissionAndNavigateToMainActivity()
         }
     }
 

@@ -21,14 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import androidx.annotation.Keep
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.skydoves.powermenu.PowerMenuItem
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.refreshPreLoadedNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.fragments.bottomsheats.AllowPermissionBottomSheet
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.fragments.bottomsheats.MenuBottomSheet
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.performViewPagerAdapterItemClickListeners
@@ -59,16 +53,8 @@ class SearchActivity : BaseActivity() , MenuBottomSheet.ItemClickListener {
 
     private fun setListeners() {
         adapter.setOnItemClickListener {docModel->
-            if (Companions.pdfListCounter == Companions.globalInterAdCounter) {
-                this.docModel = docModel
-                InterstitialAdsUtils.getInstance().showInterstitialAdNew(this) {
-                    performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
-                }
-                Companions.pdfListCounter = 0
-            } else {
-                Companions.pdfListCounter++
-                performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
-            }
+            Companions.pdfListCounter++
+            performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
         }
         adapter.setOnBookmarkClickListener { path: String, isBookmark: Boolean, docModel ->
             GlobalScope.launch(Dispatchers.Default) {
@@ -174,9 +160,6 @@ class SearchActivity : BaseActivity() , MenuBottomSheet.ItemClickListener {
     }
 
     private fun initView() {
-        refreshPreLoadedNativeAd(utilsViewModel.isPremiumUser(), TAG) {
-            nativeAd = it
-        }
 
         binding.progressBar.visibility = View.VISIBLE
 
@@ -235,7 +218,7 @@ class SearchActivity : BaseActivity() , MenuBottomSheet.ItemClickListener {
                 newList = filesList,
                 isGridEnable = false,
                 utilsViewModel.isPremiumUser(),
-                context.isInternetConnected(),
+                false,
                 Companions.sortType
             ) {
                 binding.progressBar.visibility = View.GONE
@@ -251,30 +234,9 @@ class SearchActivity : BaseActivity() , MenuBottomSheet.ItemClickListener {
         binding.noDataFoundLayout.shimmerViewContainer.startShimmer()
 
         this.let { context ->
-            if (!utilsViewModel.isPremiumUser() && context.isInternetConnected()) {
-                binding.noDataFoundLayout.adLayout.visibility = View.VISIBLE
-                this.setNativeAd(
-                    utilsViewModel.isPremiumUser(),
-                    binding.noDataFoundLayout.adLayout,
-                    R.layout.empty_screen_ad_layout,
-                    placement = NativeAdOptions.ADCHOICES_BOTTOM_RIGHT,
-                    preLoadedNativeAd = nativeAd,
-                    TAG = TAG,
-                    adMobNativeId = getString(R.string.native_id), onFailed = {
-                        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                        binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                        binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                    }
-                ) {
-                    nativeAd = it
-                    binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                    binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                }
-            }else{
-                binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-            }
+            binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
+            binding.noDataFoundLayout.adLayout.visibility = View.GONE
+            binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
         }
         /************************/
     }

@@ -6,12 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.gms.ads.nativead.NativeAdOptions
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.refreshPreLoadedNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.*
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.FragmentAllPdfBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.activities.DashboardActivity
@@ -79,10 +74,7 @@ class AllDocumentsFragment : BaseFragment(), MenuBottomSheet.ItemClickListener {
             activity?.let { activity ->
                 if (pdfListCounter == globalInterAdCounter) {
                     this.docModel = docModel
-                    InterstitialAdsUtils.getInstance()
-                        .showInterstitialAdNew(activity) {
-                            activity.performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
-                        }
+                    activity.performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
                     pdfListCounter = 0
                 } else {
                     pdfListCounter++
@@ -129,36 +121,10 @@ class AllDocumentsFragment : BaseFragment(), MenuBottomSheet.ItemClickListener {
 
     private fun refreshAdOnView() {
         /**show native ad*/
-        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.VISIBLE
-        binding.noDataFoundLayout.shimmerViewContainer.startShimmer()
 
-        context?.let { context ->
-            if (!utilsViewModel.isPremiumUser() && context.isInternetConnected()) {
-                binding.noDataFoundLayout.adLayout.visibility = View.VISIBLE
-                activity?.let { activity ->
-                    activity.setNativeAd(
-                        utilsViewModel.isPremiumUser(),
-                        binding.noDataFoundLayout.adLayout,
-                        R.layout.empty_screen_ad_layout,
-                        placement = NativeAdOptions.ADCHOICES_BOTTOM_RIGHT,
-                        preLoadedNativeAd = preLoadedNativeAd,
-                        TAG = TAG,
-                        adMobNativeId = getString(R.string.native_id), onFailed = {
-                            binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                            binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                            binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                        }
-                    ) {
-                        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                        binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                    }
-                }
-            }else{
-                binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-            }
-        }
+        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
+        binding.noDataFoundLayout.adLayout.visibility = View.GONE
+        binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
         /************************/
     }
 
@@ -216,7 +182,7 @@ class AllDocumentsFragment : BaseFragment(), MenuBottomSheet.ItemClickListener {
                 newList = filesList,
                 isGridEnable = false,
                 utilsViewModel.isPremiumUser(),
-                context.isInternetConnected(),
+                false,
                 sortType
             ) {
                 binding.progressBar.visibility = View.GONE

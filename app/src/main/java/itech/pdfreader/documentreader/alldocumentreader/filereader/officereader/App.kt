@@ -4,14 +4,12 @@ import android.app.Application
 import android.content.Context
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.OnLifecycleEvent
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.AppOpen
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.AppModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+
 @Keep
 class App : Application() {
     companion object{

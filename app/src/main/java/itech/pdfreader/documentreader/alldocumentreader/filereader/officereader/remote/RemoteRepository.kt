@@ -3,7 +3,7 @@ package itech.pdfreader.documentreader.alldocumentreader.filereader.officereader
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+// Firebase Remote Config已移除，使用本地配置
 import com.google.gson.Gson
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Constants.appOpenCounterKey
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Constants.isPremiumUserKey
@@ -17,7 +17,7 @@ private const val IS_RATING_APPLIED = "isRatingApplied"
 
 class DataRepository(
     var application: Application,
-    var firebaseRemoteConfig: FirebaseRemoteConfig,
+    var localRemoteConfig: LocalRemoteConfig,
     var sharedPref: SharedPref
 ) {
 
@@ -25,18 +25,18 @@ class DataRepository(
     var remoteConfigModel: RemoteConfigModel? = getRemoteValues()
 
     private fun getRemoteValues(): RemoteConfigModel? {
-        return if (firebaseRemoteConfig.getString(remoteKeyforDocumantViewer()) == null) {
-            Log.d("remote_status", "Status is  Data is null")
+        return try {
+            val configString = localRemoteConfig.getString(remoteKeyforDocumantViewer())
+            if (configString.isEmpty()) {
+                Log.d("remote_status", "Status is  Data is null")
+                RemoteConfigModel()
+            } else {
+                Log.d("remote_status", "Data $configString")
+                Gson().fromJson(configString, RemoteConfigModel::class.java)
+            }
+        } catch (e: Exception) {
+            Log.d("remote_status", "Error parsing config: ${e.message}")
             RemoteConfigModel()
-        } else {
-            Log.d(
-                "remote_status",
-                "Data ${firebaseRemoteConfig.getString(remoteKeyforDocumantViewer())}"
-            )
-            Gson().fromJson(
-                firebaseRemoteConfig.getString(remoteKeyforDocumantViewer()),
-                RemoteConfigModel::class.java
-            )
         }
     }
 
@@ -76,16 +76,21 @@ class DataRepository(
     }
 
     fun syncConfigData() {
-        firebaseRemoteConfig.fetchAndActivate()
+        localRemoteConfig.fetchAndActivate()
             .addOnCompleteListener {
-                remoteConfigModel = Gson().fromJson(
-                    firebaseRemoteConfig.getString(remoteKeyforDocumantViewer()),
-                    RemoteConfigModel::class.java
-                )
+                try {
+                    remoteConfigModel = Gson().fromJson(
+                        localRemoteConfig.getString(remoteKeyforDocumantViewer()),
+                        RemoteConfigModel::class.java
+                    )
+                } catch (e: Exception) {
+                    Log.d("remote_status", "Error syncing config: ${e.message}")
+                    remoteConfigModel = RemoteConfigModel()
+                }
             }.addOnSuccessListener {
                 Log.d("remote_status", "Status is $it")
             }.addOnFailureListener {
-                Log.d("remote_status", "Status is ${it.stackTrace}")
+                Log.d("remote_status", "Config sync failed")
             }
     }
 
@@ -93,11 +98,11 @@ class DataRepository(
         @Volatile
         private var INSTANCE: DataRepository? = null
 
-        fun getInstance(application: Application, firebaseRemoteConfig: FirebaseRemoteConfig,
+        fun getInstance(application: Application, localRemoteConfig: LocalRemoteConfig,
                         sharedPref: SharedPref): DataRepository =
             INSTANCE ?: synchronized(this) {
                 INSTANCE
-                    ?: DataRepository(application,firebaseRemoteConfig,sharedPref)
+                    ?: DataRepository(application, localRemoteConfig, sharedPref)
                         .also { INSTANCE = it }
             }
 

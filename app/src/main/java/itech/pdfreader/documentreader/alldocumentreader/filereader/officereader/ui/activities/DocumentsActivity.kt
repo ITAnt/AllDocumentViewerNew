@@ -15,12 +15,8 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.skydoves.powermenu.PowerMenuItem
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.FragmentDocumentsBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.adapters.FileListAdapter
@@ -66,51 +62,10 @@ class DocumentsActivity : BaseActivity(), MenuBottomSheet.ItemClickListener {
 
     private val TAG = "DocumentsFragment"
 
-    private fun refreshAdOnView() {
-        /**show native ad*/
-        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.VISIBLE
-        binding.noDataFoundLayout.shimmerViewContainer.startShimmer()
-
-        if (!utilsViewModel.isPremiumUser() && isInternetConnected()) {
-            binding.noDataFoundLayout.adLayout.visibility = View.VISIBLE
-            setNativeAd(
-                utilsViewModel.isPremiumUser(),
-                binding.noDataFoundLayout.adLayout,
-                R.layout.empty_screen_ad_layout,
-                placement = NativeAdOptions.ADCHOICES_BOTTOM_RIGHT,
-                TAG = TAG,
-                preLoadedNativeAd = nativeAd,
-                adMobNativeId = getString(R.string.searchScreenNativeId),
-                onFailed = {
-                    binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                    binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                    binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                }
-            ) {
-                binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                nativeAd = it
-            }
-        } else {
-            binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-            binding.noDataFoundLayout.adLayout.visibility = View.GONE
-            binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-        }
-        /************************/
-    }
-
     private fun setListeners() {
         adapter.setOnItemClickListener { docModel ->
-            addButtonDelay(1000)
-            if (Companions.pdfListCounter == Companions.globalInterAdCounter) {
-                InterstitialAdsUtils.getInstance().showInterstitialAdNew(this) {
-                    performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
-                }
-                Companions.pdfListCounter = 0
-            } else {
-                Companions.pdfListCounter++
-                performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
-            }
+            Companions.pdfListCounter++
+            performViewPagerAdapterItemClickListeners(docModel, dataViewModel)
         }
         adapter.setOnBookmarkClickListener { path: String, isBookmark: Boolean, docModel ->
             addButtonDelay(1000)
@@ -125,7 +80,6 @@ class DocumentsActivity : BaseActivity(), MenuBottomSheet.ItemClickListener {
             }
         }
         adapter.setOnMenuClickListener { docModel ->
-
             supportFragmentManager.let {
                 MenuBottomSheet.newInstance(Bundle().apply {
                     putSerializable(Constants.DOC_MODEL, docModel)
@@ -377,7 +331,7 @@ class DocumentsActivity : BaseActivity(), MenuBottomSheet.ItemClickListener {
                 newList = filesList,
                 isGridEnable = gridEnable,
                 utilsViewModel.isPremiumUser(),
-                isInternetConnected(),
+                false,
                 Companions.sortType
             ) {
                 binding.progressBar.visibility = View.GONE
@@ -392,10 +346,8 @@ class DocumentsActivity : BaseActivity(), MenuBottomSheet.ItemClickListener {
                 binding.noDataFoundLayout.noDataFoundLayout.visibility = View.VISIBLE
                 binding.noDataFoundLayout.imageView4.visibility = View.VISIBLE
                 binding.noDataFoundLayout.textView7.visibility = View.VISIBLE
-                refreshAdOnView()
             }
             list.size <= 1 -> {
-                refreshAdOnView()
                 binding.noDataFoundLayout.noDataFoundLayout.visibility = View.VISIBLE
                 binding.noDataFoundLayout.imageView4.visibility = View.INVISIBLE
                 binding.noDataFoundLayout.textView7.visibility = View.INVISIBLE

@@ -9,8 +9,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.DialogExitBottomSheatBinding
 import androidx.annotation.Keep
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.activities.DashboardActivity
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions.Companion.preLoadedNativeAd
 
@@ -46,25 +44,9 @@ class ExitBottomSheetDialog: BottomSheetDialogFragment() {
 
     private fun refreshAd() {
         /**show native ad*/
-        if (!(requireActivity() as DashboardActivity).utilsViewModel.isPremiumUser() && requireContext().isInternetConnected()) {
-            binding.adLayout.visibility = View.VISIBLE
-            requireActivity().setNativeAd(
-                (requireActivity() as DashboardActivity).utilsViewModel.isPremiumUser(),
-                binding.adLayout,
-                R.layout.exit_bottom_sheet_native_ad_layout,
-                TAG,
-                preLoadedNativeAd =preLoadedNativeAd,
-                adMobNativeId = getString(R.string.native_id),
-                onFailed = {
-                    binding.shimmerViewContainer.visibility = View.GONE
-                    binding.adLayout.visibility = View.GONE
-                    binding.shimmerViewContainer.stopShimmer()
-                }
-            ) {
-                binding.shimmerViewContainer.visibility = View.GONE
-                binding.shimmerViewContainer.stopShimmer()
-            }
-        }
+        binding.shimmerViewContainer.visibility = View.GONE
+        binding.adLayout.visibility = View.GONE
+        binding.shimmerViewContainer.stopShimmer()
         /************************/
     }
 

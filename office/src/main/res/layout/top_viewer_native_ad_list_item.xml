@@ -13,7 +13,8 @@
         android:layout_marginEnd="@dimen/_5sdp"
         app:cardElevation="0dp"
         app:cardCornerRadius="8dp"
-        android:theme="@style/Theme.AppCompat.DayNight">
+        android:theme="@style/Theme.AppCompat.DayNight"
+        android:visibility="gone">
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_view_container"

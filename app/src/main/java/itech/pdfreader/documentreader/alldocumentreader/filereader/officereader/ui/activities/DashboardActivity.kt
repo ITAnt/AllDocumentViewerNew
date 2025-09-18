@@ -12,13 +12,8 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.GravityCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.BuildConfig
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.refreshPreLoadedNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.ActivityMainBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.inappupdate.InAppUpdate
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
@@ -37,7 +32,6 @@ import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions.Companion.globalInterAdCounter
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions.Companion.isCallHomeFragment
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions.Companion.isRecentAdded
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Companions.Companion.preLoadedNativeAd
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.uitilities.Constants.isRatingDoneFirstTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -60,8 +54,7 @@ class DashboardActivity : BaseActivity() {
         }
         Companions.isAllFilesLoaded = false
         binding = ActivityMainBinding.inflate(layoutInflater)
-        if (sharedPref.getBoolean(isRatingDoneFirstTime))
-            preLoadBottomSheetNativeAd()
+        //if (sharedPref.getBoolean(isRatingDoneFirstTime))
 //        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 //        navController = navHostFragment.navController
         binding.apply {
@@ -88,7 +81,6 @@ class DashboardActivity : BaseActivity() {
             bottomNavigationView.setOnItemSelectedListener { item ->
                 Companions.isAllFilesLoaded = false
                 if (bottomSheetCounter == globalInterAdCounter) {
-                    InterstitialAdsUtils.getInstance().showInterstitialAdNew(this@DashboardActivity)
                     bottomSheetCounter = 0
                 } else {
                     bottomSheetCounter++
@@ -141,7 +133,6 @@ class DashboardActivity : BaseActivity() {
             RateDialogNew(this).createRateUsDialog(false, sharedPref)
         }
         binding.header.drawerBtn.setOnClickListener {
-            refreshAdOnView()
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
         dataViewModel.allFiles.observe(this@DashboardActivity, { files ->
@@ -161,14 +152,6 @@ class DashboardActivity : BaseActivity() {
 
     var onAllFileListObserverCall: ((MutableList<DataModel>) -> Unit)? = null
 
-    private fun preLoadBottomSheetNativeAd() {
-        refreshPreLoadedNativeAd(
-            utilsViewModel.isPremiumUser(),
-            ExitBottomSheetDialog::class.java.name
-        ) {
-            preLoadedNativeAd = it
-        }
-    }
 
     private fun setupViewPagerBottomSheet(viewPager: ViewPager2) {
         val adapter = ViewPagerAdapter(this)
@@ -289,36 +272,6 @@ class DashboardActivity : BaseActivity() {
                 dataViewModel.getBookmarkDocList()
             }
         }
-    }
-
-    private fun refreshAdOnView() {
-        /**show native ad*/
-        binding.drawer.shimmerViewContainer.visibility = View.VISIBLE
-        binding.drawer.shimmerViewContainer.startShimmer()
-
-        if (!utilsViewModel.isPremiumUser() && isInternetConnected()) {
-            binding.drawer.adLayout.visibility = View.VISIBLE
-            setNativeAd(
-                utilsViewModel.isPremiumUser(),
-                binding.drawer.adLayout,
-                R.layout.empty_screen_ad_layout,
-                TAG,
-                placement = NativeAdOptions.ADCHOICES_BOTTOM_RIGHT,
-                adMobNativeId = getString(R.string.native_id), onFailed = {
-                    binding.drawer.shimmerViewContainer.visibility = View.GONE
-                    binding.drawer.adLayout.visibility = View.GONE
-                    binding.drawer.shimmerViewContainer.stopShimmer()
-                }
-            ) {
-                binding.drawer.shimmerViewContainer.visibility = View.GONE
-                binding.drawer.shimmerViewContainer.stopShimmer()
-            }
-        } else {
-            binding.drawer.shimmerViewContainer.visibility = View.GONE
-            binding.drawer.adLayout.visibility = View.GONE
-            binding.drawer.shimmerViewContainer.stopShimmer()
-        }
-        /************************/
     }
 
     private fun checkAllPermissions() {

@@ -18,12 +18,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.skydoves.powermenu.PowerMenuItem
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.FragmentDocumentsBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.adapters.FileListAdapter
@@ -60,32 +56,9 @@ class DocumentsFragment : BaseFragment() {
     private val TAG = "DocumentsFragment"
 
     private fun refreshAdOnView() {
-        /**show native ad*/
-        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.VISIBLE
-        binding.noDataFoundLayout.shimmerViewContainer.startShimmer()
-
-        context?.let { context ->
-
-            if (!utilsViewModel.isPremiumUser() && context.isInternetConnected()) {
-                binding.noDataFoundLayout.adLayout.visibility = View.VISIBLE
-                activity?.setNativeAd(
-                    utilsViewModel.isPremiumUser(),
-                    binding.noDataFoundLayout.adLayout,
-                    R.layout.empty_screen_ad_layout,
-                    placement = NativeAdOptions.ADCHOICES_BOTTOM_RIGHT,
-                    preLoadedNativeAd = Companions.preLoadedNativeAd,
-                    TAG = TAG,
-                    adMobNativeId = getString(R.string.searchScreenNativeId), onFailed = {
-                        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                        binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                        binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                    }
-                ) {
-                    binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                    binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                }
-            }
-        }
+        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
+        binding.noDataFoundLayout.adLayout.visibility = View.GONE
+        binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
         /************************/
     }
 
@@ -93,9 +66,7 @@ class DocumentsFragment : BaseFragment() {
         adapter.setOnItemClickListener {docModel->
             activity?.let {activity->
                 if (Companions.pdfListCounter == Companions.globalInterAdCounter) {
-                    InterstitialAdsUtils.getInstance().showInterstitialAdNew(activity) {
-                        activity.performViewPagerAdapterItemClickListeners(docModel,dataViewModel)
-                    }
+                    activity.performViewPagerAdapterItemClickListeners(docModel,dataViewModel)
                     Companions.pdfListCounter = 0
                 } else {
                     Companions.pdfListCounter++
@@ -233,7 +204,7 @@ class DocumentsFragment : BaseFragment() {
                 newList = filesList,
                 isGridEnable = gridEnable,
                 utilsViewModel.isPremiumUser(),
-                context.isInternetConnected(),
+                false,
                 Companions.sortType
             ) {
                 binding.progressBar.visibility = View.GONE

@@ -9,8 +9,6 @@ import android.view.View
 import androidx.viewpager2.widget.ViewPager2
 import com.itextpdf.text.pdf.PdfReader
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.ActivityPageByPageViewBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.FilePageModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.adapters.PdfPagesSliderAdapter
@@ -48,25 +46,8 @@ class PageByPageViewActivity : BaseActivity() {
 
     private fun refreshAdOnView() {
         /**show native ad*/
-        binding.shimmerViewContainer.visibility = View.VISIBLE
-        binding.shimmerViewContainer.startShimmer()
-        if (!utilsViewModel.isPremiumUser() && isInternetConnected()) {
-            binding.adLayout.visibility = View.VISIBLE
-            setNativeAd(
-                utilsViewModel.isPremiumUser(),
-                binding.adLayout,
-                R.layout.view_screen_native_layout,
-                TAG,
-                adMobNativeId = getString(R.string.pageEditorScreenNativeId), onFailed = {
-                    binding.shimmerViewContainer.visibility = View.GONE
-                    binding.adLayout.visibility = View.GONE
-                    binding.shimmerViewContainer.stopShimmer()
-                }
-            ) {
-                binding.shimmerViewContainer.visibility = View.GONE
-                binding.shimmerViewContainer.stopShimmer()
-            }
-        }
+        binding.adLayout.visibility = View.GONE
+        binding.shimmerViewContainer.visibility = View.GONE
         /************************/
     }
 

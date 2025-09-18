@@ -6,12 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.gms.ads.nativead.NativeAdOptions
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.refreshPreLoadedNativeAd
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.setNativeAd
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.*
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.FragmentMyFilesBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.DataModel
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ui.activities.DashboardActivity
@@ -79,9 +74,7 @@ class BookmarkFragment : BaseFragment(), MenuBottomSheet.ItemClickListener {
             activity?.let { activity ->
                 if (Companions.pdfListCounter == Companions.globalInterAdCounter) {
                     this.dataModel = docModel
-                    InterstitialAdsUtils.getInstance().showInterstitialAdNew(activity) {
-                        activity.performViewPagerAdapterItemClickListeners(docModel,dataViewModel)
-                    }
+                    activity.performViewPagerAdapterItemClickListeners(docModel,dataViewModel)
                     Companions.pdfListCounter = 0
                 } else {
                     Companions.pdfListCounter++
@@ -172,13 +165,6 @@ class BookmarkFragment : BaseFragment(), MenuBottomSheet.ItemClickListener {
     }
 
     private fun initView() {
-        if (preLoadedNativeAd == null)
-            activity?.refreshPreLoadedNativeAd(
-                utilsViewModel.isPremiumUser(),
-                ExitBottomSheetDialog::class.java.name
-            ) {
-                preLoadedNativeAd = it
-            }
         binding.progressBar.visibility = View.VISIBLE
 
         val gridEnable = sharedPref.getBoolean(Constants.GRID_VALUE)
@@ -200,34 +186,11 @@ class BookmarkFragment : BaseFragment(), MenuBottomSheet.ItemClickListener {
     }
 
     private fun refreshAdOnView() {
-        /**show native ad*/
-        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.VISIBLE
-        binding.noDataFoundLayout.shimmerViewContainer.startShimmer()
 
         context?.let { context ->
-            if (!utilsViewModel.isPremiumUser() && context.isInternetConnected()) {
-                binding.noDataFoundLayout.adLayout.visibility = View.VISIBLE
-                activity?.setNativeAd(
-                    utilsViewModel.isPremiumUser(),
-                    binding.noDataFoundLayout.adLayout,
-                    R.layout.empty_screen_ad_layout,
-                    placement = NativeAdOptions.ADCHOICES_BOTTOM_RIGHT,
-                    preLoadedNativeAd = preLoadedNativeAd,
-                    TAG = TAG,
-                    adMobNativeId = getString(R.string.native_id), onFailed = {
-                        binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                        binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                        binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                    }
-                ) {
-                    binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                    binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-                }
-            }else{
-                binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
-                binding.noDataFoundLayout.adLayout.visibility = View.GONE
-                binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
-            }
+            binding.noDataFoundLayout.shimmerViewContainer.visibility = View.GONE
+            binding.noDataFoundLayout.adLayout.visibility = View.GONE
+            binding.noDataFoundLayout.shimmerViewContainer.stopShimmer()
         }
         /************************/
     }

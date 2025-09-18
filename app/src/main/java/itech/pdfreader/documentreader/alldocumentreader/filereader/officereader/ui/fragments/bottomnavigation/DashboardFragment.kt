@@ -15,8 +15,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.skydoves.powermenu.PowerMenuItem
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.R
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.adsutils.InterstitialAdsUtils
-import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.ads.utilities.ExtentionsFunctions.isInternetConnected
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.databinding.FragmentHomeBinding
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.AdModelClass
 import itech.pdfreader.documentreader.alldocumentreader.filereader.officereader.models.ToolClass
@@ -64,40 +62,6 @@ class DashboardFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!utilsViewModel.isPremiumUser() && requireContext().isInternetConnected()) {
-            adsList.add(AdModelClass("", "", "", "", "", Constants.NATIVE_AD))
-            utilsViewModel.remoteConfigModel?.let { it ->
-                if (!it.crossPromotionAppsData?.appsLinks.isNullOrEmpty()) {
-                    crossPromotionRemoteList.clear()
-                    it.crossPromotionAppsData?.appsLinks?.let { it1 ->
-                        crossPromotionRemoteList.addAll(it1)
-                    }
-                    it.crossPromotionAppsData?.appsLinks?.forEach {
-                        adsList.add(
-                            AdModelClass(
-                                it.appShortDesc.toString(),
-                                it.appShortDesc.toString(),
-                                "INSTALL",
-                                it.appCoverLink.toString(),
-                                it.appIconLink.toString(),
-                                it.appLink.toString()
-                            )
-                        )
-                    }
-                } else {
-                    adsList.add(
-                        AdModelClass(
-                            "PDF Reader-PDF Editor, Creator",
-                            "iTech Solution AppsProductivity",
-                            "INSTALL",
-                            "https://play-lh.googleusercontent.com/2Ax7coEMZiUOqtyyzIgOXbZm9V9Js8dcfsaNZTs2dXRIm7alecD9m7iyf_ZzSgnjS8WE=s180-rw",
-                            "https://play-lh.googleusercontent.com/2Ax7coEMZiUOqtyyzIgOXbZm9V9Js8dcfsaNZTs2dXRIm7alecD9m7iyf_ZzSgnjS8WE=s180-rw",
-                            "https://play.google.com/store/apps/details?id=itech.pdfreader.documentreader.alldocumentreader.filereader.officereader"
-                        )
-                    )
-                }
-            }
-        }
 
         toolsList.add(
             ToolClass(
@@ -263,9 +227,7 @@ class DashboardFragment : BaseFragment() {
             topAdapterButtonClickText = toolClass.text
 
             if (homeScreenCounter == globalInterAdCounter) {
-                InterstitialAdsUtils.getInstance().showInterstitialAdNew(requireActivity()) {
-                    setTopAdapterButtonClick(toolClass.text)
-                }
+                setTopAdapterButtonClick(toolClass.text)
                 homeScreenCounter = 0
             } else {
                 homeScreenCounter++
