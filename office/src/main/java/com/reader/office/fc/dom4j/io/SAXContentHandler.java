@@ -954,7 +954,7 @@ public class SAXContentHandler extends DefaultHandler implements LexicalHandler,
 
             if (m != null)
             {
-                return (String)m.invoke(locator, null);
+                return (String)m.invoke(locator/*, null*/);
             }
         }
         catch(Exception e)

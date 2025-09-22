@@ -20,7 +20,8 @@
         >
         <activity
             android:name="com.reader.office.Dummy2Activity"
-            android:label="@string/sys_name">
+            android:label="@string/sys_name"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" />
@@ -37,7 +38,8 @@
             android:name="com.reader.office.officereader.FileListActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/sys_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -78,7 +80,8 @@
         <activity
             android:name="com.reader.office.officereader.AppActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:label="@string/sys_name">
+            android:label="@string/sys_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -119,19 +122,21 @@
         <activity
             android:name="com.reader.office.officereader.SettingActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:label="@string/sys_name">
+            android:label="@string/sys_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
             <intent-filter><category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="http" />
                 <data android:scheme="https" />
                 <data android:scheme="inline" />
                 <data android:scheme="file" />
             </intent-filter>
         </activity>
-        <activity android:name=".officereader.SysActivity" />
+        <activity
+            android:name=".officereader.SysActivity"
+            android:exported="true"/>
 <!--        <activity android:name="com.wxiwei.office.Dummy2Activity" />-->
     </application>
 </manifest>
